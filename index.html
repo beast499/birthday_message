@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bakery's Birthday Adventure!</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
+
+body {
+    font-family: 'Comic Neue', cursive;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    position: relative;
+    background: #ffeaa7;
+}
+
+header {
+    text-align: center;
+    padding: 50px 20px;
+    background: linear-gradient(to right, #fd79a8, #fab1a0);
+    transition: background 0.8s;
+}
+header h1 {
+    font-size: 3em;
+    margin: 0;
+    color: #fff;
+    text-shadow: 2px 2px #2d3436;
+}
+header p {
+    font-size: 1.2em;
+    margin-top: 10px;
+    color: #2d3436;
+}
+
+section {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 30px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    position: relative;
+    z-index: 1;
+}
+
+h2 {
+    color: #e17055;
+    text-align: center;
+}
+
+.quiz p {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+.quiz button {
+    margin: 5px;
+    padding: 12px 25px;
+    background: #ffeaa7;
+    border: 2px solid #fab1a0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s, top 0.3s, left 0.3s;
+    font-weight: bold;
+    position: relative;
+}
+
+.quiz button:hover {
+    transform: scale(1.1);
+    background: #fab1a0;
+    color: #fff;
+}
+
+#explanation {
+    margin-top: 15px;
+    font-size: 1em;
+    font-style: italic;
+    color: #2d3436;
+    text-align: center;
+}
+
+#finalMessage {
+    margin-top: 40px;
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #2d3436;
+    text-align: center;
+    line-height: 1.5;
+    display: none;
+    position: relative;
+    z-index: 2;
+}
+
+#finalMessage span {
+    color: #e84118;
+    font-weight: bolder;
+    font-size: 1.2em;
+    animation: bounce 1s infinite alternate;
+}
+
+@keyframes bounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-10px); }
+}
+
+footer {
+    text-align: center;
+    padding: 40px;
+    font-style: italic;
+    color: #d63031;
+}
+
+/* Confetti */
+.confetti-piece {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    opacity: 0.8;
+    z-index: 999; 
+    pointer-events: none;
+    animation: fall 4s linear infinite;
+}
+
+@keyframes fall {
+    0% { transform: translateY(-10vh) rotate(0deg); }
+    100% { transform: translateY(110vh) rotate(360deg); }
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🎉 Happy Birthday Bakery! 🎉</h1>
+<p>Varsha, scroll down for your magical birthday adventure 🌟</p>
+</header>
+
+<section>
+<h2>Funny Mini Quiz: Only for Legendary Bakery 😎</h2>
+<div class="quiz" id="quizArea"></div>
+<div id="explanation"></div>
+<div id="finalMessage">
+    Varsha, you are the bravest and strongest girl I have ever met 💪. I know I won’t meet anyone like you in the future. <br>
+    Wishing you a very happy birthday from your <span>crazy</span> friend 🤪! Keep being unapologetically YOU, Bakery! 🎂🎈✨
+</div>
+</section>
+
+<footer>
+Scroll, laugh, and remember… Bakery forever! 🌟
+</footer>
+
+<!-- Your Uploaded Song -->
+<audio id="finalMusic" src="flawed-mangoes-dramamine-made-with-Voicemod.mp3" preload="auto" loop></audio>
+
+<script>
+const questions = [
+{
+    question: "1. If Bakery was a dessert, she’d probably be… 🍫",
+    correct: "Choco Lava Cake 🍫",
+    answers: ["Vanilla Ice Cream 🍦", "Choco Lava Cake 🍫", "Strawberry Tart 🍓"],
+    explanation: "Because just like a Choco Lava Cake, you’re warm inside and irresistible outside 🍫💖 — you light up every room!"
+},
+{
+    question: "2. Bakery’s hidden superpower in everyday life? 🦸‍♀️",
+    correct: "Being Brave 💪",
+    answers: ["Sleeping 💤", "Being Brave 💪", "Talking too much 🗣️"],
+    explanation: "Your courage inspires all! You take on life with strength and make even tough moments brighter ✨."
+},
+{
+    question: "3. If Bakery joined a superhero team, her epic codename would be… 🦁",
+    correct: "Lioness 🦁",
+    answers: ["Sloth Queen 🦥", "Lioness 🦁", "Cupcake Crusader 🧁"],
+    explanation: "You’re fierce, loyal, and unstoppable — a true Lioness! 👑🔥"
+}
+];
+
+let currentQuestion = 0;
+
+function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+}
+
+function loadQuestion() {
+    const quizArea = document.getElementById("quizArea");
+    const explanation = document.getElementById("explanation");
+    quizArea.innerHTML = "";
+    explanation.innerHTML = "";
+
+    const q = questions[currentQuestion];
+    const themes = ["#ffeaa7","#fab1a0","#fd79a8"];
+    document.body.style.background = themes[currentQuestion];
+    document.querySelector("header").style.background = `linear-gradient(to right, ${themes[currentQuestion]}, #fff)`;
+
+    const questionP = document.createElement("p");
+    questionP.textContent = q.question;
+    quizArea.appendChild(questionP);
+
+    const shuffled = shuffleArray([...q.answers]);
+    shuffled.forEach(ans => {
+        const btn = document.createElement("button");
+        btn.textContent = ans;
+        btn.onclick = () => checkAnswer(ans, explanation);
+        quizArea.appendChild(btn);
+    });
+}
+
+function checkAnswer(answer, explanationDiv) {
+    const q = questions[currentQuestion];
+    if (answer === q.correct) {
+        explanationDiv.innerHTML = `✅ ${q.explanation}`;
+        currentQuestion++;
+        setTimeout(() => {
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showFinalMessage();
+            }
+        }, 2000);
+    } else {
+        explanationDiv.innerHTML = "❌ Nope! Try again… 😜";
+    }
+}
+
+function fadeInAudio(audio, duration = 3000) {
+    audio.volume = 0;
+    audio.play();
+    let step = 0.05;
+    let interval = duration / (1 / step);
+    let fade = setInterval(() => {
+        if (audio.volume < 1) {
+            audio.volume = Math.min(audio.volume + step, 1);
+        } else {
+            clearInterval(fade);
+        }
+    }, interval);
+}
+
+function showFinalMessage() {
+    document.getElementById("quizArea").style.display = "none";
+    document.getElementById("explanation").style.display = "none";
+    const finalMsg = document.getElementById("finalMessage");
+    finalMsg.style.display = "block";
+
+    document.body.style.background = "#ffeaa7";
+    document.querySelector("header").style.background = `linear-gradient(to right, #fd79a8, #fab1a0)`;
+
+    // Start your song
+    const music = document.getElementById("finalMusic");
+    fadeInAudio(music, 4000);
+
+    // Confetti
+    for (let i = 0; i < 100; i++) {
+        const conf = document.createElement("div");
+        conf.classList.add("confetti-piece");
+        conf.style.background = `hsl(${Math.random()*360}, 70%, 60%)`;
+        conf.style.left = Math.random() * 100 + "vw";
+        conf.style.animationDuration = (Math.random()*3 + 3) + "s";
+        conf.style.width = conf.style.height = (Math.random()*12 + 8) + "px";
+        document.body.appendChild(conf);
+    }
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
